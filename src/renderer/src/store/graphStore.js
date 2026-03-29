@@ -24,6 +24,9 @@ export const useGraphStore = create((set, get) => ({
   selectedNodeId: null,
   renderState: { status: 'idle', progress: 0, outputPath: null, error: null },
   previewImage: null,
+  nodePreviews: {},
+  previewTimestamp: 0,
+  clipDuration: 0,
 
   onNodesChange: (changes) =>
     set(s => ({ nodes: applyNodeChanges(changes, s.nodes) })),
@@ -58,6 +61,9 @@ export const useGraphStore = create((set, get) => ({
   setRenderState: (renderState) => set({ renderState }),
 
   setPreviewImage: (previewImage) => set({ previewImage }),
+  setNodePreviews: (nodePreviews) => set({ nodePreviews }),
+  setPreviewTimestamp: (previewTimestamp) => set({ previewTimestamp }),
+  setClipDuration: (clipDuration) => set({ clipDuration }),
 
   getGraph: () => {
     const { nodes, edges } = get();
