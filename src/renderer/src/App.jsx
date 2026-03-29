@@ -65,14 +65,12 @@ function Toolbar({ onAddNode, onRender, onSave, onOpen, renderStatus }) {
 }
 
 export default function App() {
-  const { addNode, getGraph, loadGraph, setRenderState, renderState, nodes } = useGraphStore(s => ({
-    addNode: s.addNode,
-    getGraph: s.getGraph,
-    loadGraph: s.loadGraph,
-    setRenderState: s.setRenderState,
-    renderState: s.renderState,
-    nodes: s.nodes,
-  }));
+  const addNode = useGraphStore(s => s.addNode);
+  const getGraph = useGraphStore(s => s.getGraph);
+  const loadGraph = useGraphStore(s => s.loadGraph);
+  const setRenderState = useGraphStore(s => s.setRenderState);
+  const renderState = useGraphStore(s => s.renderState);
+  const nodes = useGraphStore(s => s.nodes);
 
   useEffect(() => {
     const remove = window.electronAPI.onRenderProgress((progress) => {

@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { useGraphStore } from '../store/graphStore';
 
 export function PreviewPanel() {
-  const { previewImage, setPreviewImage, nodes, getGraph } = useGraphStore(s => ({
-    previewImage: s.previewImage,
-    setPreviewImage: s.setPreviewImage,
-    nodes: s.nodes,
-    getGraph: s.getGraph,
-  }));
+  const previewImage = useGraphStore(s => s.previewImage);
+  const setPreviewImage = useGraphStore(s => s.setPreviewImage);
+  const nodes = useGraphStore(s => s.nodes);
+  const getGraph = useGraphStore(s => s.getGraph);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [timestamp, setTimestamp] = useState(0);
