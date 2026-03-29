@@ -39,6 +39,9 @@ describe('buildFFmpegArgs', () => {
       '-filter_complex',
       '[0:v]crop=iw*(1-0/100-0/100):ih*(1-10/100-0/100):iw*(0/100):ih*(10/100)[v0]',
       '-map', '[v0]',
+      '-map', '0:a?',
+      '-c:a', 'copy',
+      '-movflags', '+faststart',
       OUTPUT,
     ]);
   });
@@ -63,6 +66,9 @@ describe('buildFFmpegArgs', () => {
       '-filter_complex',
       '[0:v]crop=iw*(1-0/100-0/100):ih*(1-5/100-5/100):iw*(0/100):ih*(5/100)[v0];[v0]gblur=sigma=1[v1]',
       '-map', '[v1]',
+      '-map', '0:a?',
+      '-c:a', 'copy',
+      '-movflags', '+faststart',
       OUTPUT,
     ]);
   });
