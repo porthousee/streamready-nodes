@@ -18,4 +18,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('render:progress', handler);
     return () => ipcRenderer.removeListener('render:progress', handler);
   },
+
+  previewAll: (graph, inputPath, timestamp) =>
+    ipcRenderer.invoke('graph:preview-all', { graph, inputPath, timestamp }),
+
+  getVideoDuration: (filePath) =>
+    ipcRenderer.invoke('file:duration', filePath),
 });
