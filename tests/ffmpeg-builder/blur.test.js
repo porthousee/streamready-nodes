@@ -19,4 +19,10 @@ describe('blurFilter', () => {
     const result = blurFilter(node, '[v0]', '[v1]');
     expect(result).toBe('[v0]gblur=sigma=1[v1]');
   });
+
+  it('enforces minimum boxblur radius of 1 for small amounts', () => {
+    const node = { id: 'n1', type: 'blurNode', data: { amount: 3, blurType: 'box' } };
+    const result = blurFilter(node, '[v0]', '[v1]');
+    expect(result).toBe('[v0]boxblur=1:1[v1]');
+  });
 });

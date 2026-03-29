@@ -7,7 +7,7 @@
 export function combinerFilter(node, inputLabels, outputLabel) {
   const labels = [...inputLabels.matchAll(/\[([^\]]+)\]/g)].map(m => `[${m[1]}]`);
 
-  if (labels.length === 0) return '';
+  if (labels.length === 0) throw new Error('combinerFilter requires at least one input label');
   if (labels.length === 1) return `${labels[0]}copy${outputLabel}`;
 
   const filters = [];

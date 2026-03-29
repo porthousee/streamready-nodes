@@ -19,4 +19,9 @@ describe('combinerFilter', () => {
     const result = combinerFilter(node, '[v0]', '[out]');
     expect(result).toBe('[v0]copy[out]');
   });
+
+  it('throws when given no input labels', () => {
+    const node = { id: 'n1', type: 'combinerNode', data: { inputsCount: 0 } };
+    expect(() => combinerFilter(node, '', '[out]')).toThrow('at least one input');
+  });
 });

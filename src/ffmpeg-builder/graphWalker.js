@@ -34,6 +34,10 @@ function topologicalSort(nodes, edges) {
     }
   }
 
+  if (result.length !== nodes.length) {
+    throw new Error('Graph contains a cycle — cannot build FFmpeg filter chain');
+  }
+
   return result;
 }
 
@@ -42,6 +46,10 @@ export function buildFFmpegArgs(graph, inputPath, outputPath) {
 
   const source = nodes.find(n => n.type === 'sourceNode');
   const output = nodes.find(n => n.type === 'outputNode');
+
+  if (!source) throw new Error('Graph must contain a sourceNode');
+  if (!output) throw new Error('Graph must contain an outputNode');
+
   const processing = nodes.filter(n => n.type !== 'sourceNode' && n.type !== 'outputNode');
 
   if (processing.length === 0) {
@@ -63,7 +71,13 @@ export function buildFFmpegArgs(graph, inputPath, outputPath) {
         return ai - bi;
       });
 
-    const inputLabels = inEdges.map(e => `[${labelMap[e.source]}]`).join('');
+    const inputLabels = inEdges.map(e => {
+      const label = labelMap[e.source];
+      if (label === undefined) {
+        throw new Error(`Node "${e.source}" feeds into "${node.id}" but has no output label — check graph connectivity`);
+      }
+      return `[${label}]`;
+    }).join('');
     const outLabel = `v${counter++}`;
     labelMap[node.id] = outLabel;
 

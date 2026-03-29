@@ -1,3 +1,4 @@
+// TODO: receive CANVAS_W/CANVAS_H from outputNode.data when the Output node gains resolution settings
 const CANVAS_W = 1920;
 const CANVAS_H = 1080;
 

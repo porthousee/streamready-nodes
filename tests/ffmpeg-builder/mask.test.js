@@ -38,4 +38,19 @@ describe('maskFilter', () => {
     const result = maskFilter(node, '[v0]', '[v1]');
     expect(result).toBe('[v0]copy[v1]');
   });
+
+  it('uses only the first shape when multiple shapes are provided', () => {
+    const node = {
+      id: 'n1', type: 'maskNode',
+      data: {
+        shapes: [
+          { type: 'rectangle', points: [{ x: 0, y: 0 }, { x: 100, y: 100 }] },
+          { type: 'circle', points: [{ x: 200, y: 200 }, { x: 400, y: 400 }] },
+        ],
+      },
+    };
+    const result = maskFilter(node, '[v0]', '[v1]');
+    // Only the first shape (rectangle) is used
+    expect(result).toBe("[v0]format=rgba,geq=lum='p(X,Y)':a='255*between(X,0,100)*between(Y,0,100)'[v1]");
+  });
 });

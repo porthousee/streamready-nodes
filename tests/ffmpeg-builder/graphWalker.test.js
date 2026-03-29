@@ -58,9 +58,12 @@ describe('buildFFmpegArgs', () => {
       ]
     );
     const args = buildFFmpegArgs(graph, INPUT, OUTPUT);
-    expect(args[3]).toContain('crop=');
-    expect(args[3]).toContain('gblur=sigma=1');
-    expect(args[4]).toBe('-map');
-    expect(args[6]).toBe(OUTPUT);
+    expect(args).toEqual([
+      '-i', INPUT,
+      '-filter_complex',
+      '[0:v]crop=iw*(1-0/100-0/100):ih*(1-5/100-5/100):iw*(0/100):ih*(5/100)[v0];[v0]gblur=sigma=1[v1]',
+      '-map', '[v1]',
+      OUTPUT,
+    ]);
   });
 });
