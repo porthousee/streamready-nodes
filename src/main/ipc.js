@@ -62,7 +62,6 @@ export function registerIpcHandlers() {
           '-ss', ts,
           ...baseArgs.slice(iIdx, -1),
           '-frames:v', '1',
-          '-vf', 'scale=160:-1',
           tempPath,
         ];
       } else {
@@ -73,7 +72,6 @@ export function registerIpcHandlers() {
           '-ss', ts,
           ...baseArgs.slice(iIdx, -1),
           '-frames:v', '1',
-          '-vf', 'scale=160:-1',
           tempPath,
         ];
       }

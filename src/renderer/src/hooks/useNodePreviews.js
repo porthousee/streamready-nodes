@@ -14,6 +14,8 @@ export function useNodePreviews() {
   const prevInputPath = useRef(null);
   const settingsTimer = useRef(null);
   const timestampTimer = useRef(null);
+  const previewTimestampRef = useRef(previewTimestamp);
+  useEffect(() => { previewTimestampRef.current = previewTimestamp; }, [previewTimestamp]);
 
   const runPreviews = async (path, ts, graph) => {
     if (!path) return;
@@ -39,7 +41,7 @@ export function useNodePreviews() {
     if (!inputPath) return;
     clearTimeout(settingsTimer.current);
     settingsTimer.current = setTimeout(() => {
-      runPreviews(inputPath, previewTimestamp, getGraph());
+      runPreviews(inputPath, previewTimestampRef.current, getGraph());
     }, 500);
     return () => clearTimeout(settingsTimer.current);
   }, [nodes, edges]);
