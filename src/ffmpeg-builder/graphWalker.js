@@ -94,6 +94,9 @@ export function buildFFmpegArgs(graph, inputPath, outputPath) {
     '-i', inputPath,
     '-filter_complex', filters.join(';'),
     '-map', `[${finalLabel}]`,
+    '-map', '0:a?',
+    '-c:a', 'copy',
+    '-movflags', '+faststart',
     outputPath,
   ];
 }
