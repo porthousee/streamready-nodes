@@ -128,4 +128,43 @@ describe('buildPartialFFmpegArgs', () => {
     const args = buildPartialFFmpegArgs(graph, 'c', INPUT, OUTPUT);
     expect(args).toEqual(['-i', INPUT, OUTPUT]);
   });
+
+  it('builds filter chain stopping mid-way in a three-node chain', () => {
+    const graph = makeGraph(
+      [
+        { id: 's', type: 'sourceNode', data: {} },
+        { id: 'c', type: 'cropNode', data: { top: 5, bottom: 0, left: 0, right: 0 } },
+        { id: 'b', type: 'blurNode', data: { amount: 10, blurType: 'gaussian' } },
+        { id: 't', type: 'transformNode', data: { x: 0, y: 0, scale: 1 } },
+        { id: 'o', type: 'outputNode', data: {} },
+      ],
+      [
+        { id: 'e1', source: 's', target: 'c', sourceHandle: 'out-video', targetHandle: 'in-video' },
+        { id: 'e2', source: 'c', target: 'b', sourceHandle: 'out-video', targetHandle: 'in-video' },
+        { id: 'e3', source: 'b', target: 't', sourceHandle: 'out-video', targetHandle: 'in-video' },
+        { id: 'e4', source: 't', target: 'o', sourceHandle: 'out-video', targetHandle: 'in-video' },
+      ]
+    );
+    // Stop at blur — transform should NOT be in the filter chain
+    const args = buildPartialFFmpegArgs(graph, 'b', INPUT, OUTPUT);
+    expect(args).toEqual([
+      '-i', INPUT,
+      '-filter_complex',
+      '[0:v]crop=iw*(1-0/100-0/100):ih*(1-5/100-0/100):iw*(0/100):ih*(5/100)[v0];[v0]gblur=sigma=1[v1]',
+      '-map', '[v1]',
+      OUTPUT,
+    ]);
+  });
+
+  it('throws when upToNodeId does not exist in the graph', () => {
+    const graph = makeGraph(
+      [
+        { id: 's', type: 'sourceNode', data: {} },
+        { id: 'o', type: 'outputNode', data: {} },
+      ],
+      []
+    );
+    expect(() => buildPartialFFmpegArgs(graph, 'nonexistent', INPUT, OUTPUT))
+      .toThrow('Node "nonexistent" does not exist in the graph');
+  });
 });

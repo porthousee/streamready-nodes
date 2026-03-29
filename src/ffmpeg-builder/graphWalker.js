@@ -106,6 +106,14 @@ export function buildPartialFFmpegArgs(graph, upToNodeId, inputPath, outputPath)
   const source = nodes.find(n => n.type === 'sourceNode');
   if (!source) throw new Error('Graph must contain a sourceNode');
 
+  const upToNode = nodes.find(n => n.id === upToNodeId);
+  if (!upToNode) {
+    throw new Error(`Node "${upToNodeId}" does not exist in the graph`);
+  }
+  if (upToNode.type === 'outputNode') {
+    throw new Error('buildPartialFFmpegArgs does not accept outputNode as upToNodeId');
+  }
+
   if (upToNodeId === source.id) {
     return ['-i', inputPath, outputPath];
   }
