@@ -4,9 +4,11 @@ copyright: StreamReady
 
 win:
   target:
-    - target: nsis
+    - target: zip
       arch: [x64]
   icon: resources/icon.ico
+  forceCodeSigning: false
+  signAndEditExecutable: false
 
 nsis:
   oneClick: false
