@@ -15,7 +15,7 @@ export function OutputNode({ id, data }) {
     <NodeShell title="Output" variant="output" hasOutput={false}>
       <button
         onClick={handlePick}
-        className="w-full text-left truncate text-pink hover:text-white transition-colors cursor-pointer"
+        className="nodrag w-full text-left truncate text-pink hover:text-white transition-colors cursor-pointer"
       >
         {filename ?? 'Click to set output...'}
       </button>

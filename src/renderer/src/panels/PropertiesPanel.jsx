@@ -12,7 +12,7 @@ function NumberInput({ label, value, onChange, min, max, step = 1, unit = '' }) 
           max={max}
           step={step}
           onChange={e => onChange(parseFloat(e.target.value))}
-          className="w-20 bg-bg border border-border rounded px-2 py-0.5 text-xs font-mono text-white focus:outline-none focus:border-purple"
+          className="nodrag w-20 bg-bg border border-border rounded px-2 py-0.5 text-xs font-mono text-white focus:outline-none focus:border-purple"
         />
         {unit && <span className="text-xs text-muted font-mono">{unit}</span>}
       </div>
@@ -27,7 +27,7 @@ function SelectInput({ label, value, options, onChange }) {
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="bg-bg border border-border rounded px-2 py-0.5 text-xs font-mono text-white focus:outline-none focus:border-purple"
+        className="nodrag bg-bg border border-border rounded px-2 py-0.5 text-xs font-mono text-white focus:outline-none focus:border-purple"
       >
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -78,7 +78,8 @@ const PANELS = {
 };
 
 export function PropertiesPanel() {
-  const { nodes, selectedNodeId } = useGraphStore(s => ({ nodes: s.nodes, selectedNodeId: s.selectedNodeId }));
+  const nodes = useGraphStore(s => s.nodes);
+  const selectedNodeId = useGraphStore(s => s.selectedNodeId);
   const node = nodes.find(n => n.id === selectedNodeId);
 
   if (!node || !PANELS[node.type]) {

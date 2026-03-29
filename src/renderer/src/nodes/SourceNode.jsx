@@ -4,8 +4,11 @@ import { useGraphStore } from '../store/graphStore';
 export function SourceNode({ id, data }) {
   const updateNodeData = useGraphStore(s => s.updateNodeData);
 
-  const handlePick = async () => {
+  const handlePick = async (e) => {
+    e.stopPropagation();
+    console.log('handlePick fired, electronAPI:', window.electronAPI);
     const path = await window.electronAPI.pickInputFile();
+    console.log('picked path:', path);
     if (path) updateNodeData(id, { filePath: path });
   };
 
@@ -15,7 +18,7 @@ export function SourceNode({ id, data }) {
     <NodeShell title="Source" variant="source" hasInput={false}>
       <button
         onClick={handlePick}
-        className="w-full text-left truncate text-purple hover:text-white transition-colors cursor-pointer"
+        className="nodrag w-full text-left truncate text-purple hover:text-white transition-colors cursor-pointer"
       >
         {filename ?? 'Click to open clip...'}
       </button>
