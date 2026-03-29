@@ -14,8 +14,10 @@ export function spawnFFmpeg(args, durationSecs) {
     const win = BrowserWindow.getFocusedWindow();
     const proc = spawn(ffmpegPath, ['-y', ...args]);
 
+    let stderrLog = '';
     proc.stderr.on('data', (data) => {
       const text = data.toString();
+      stderrLog += text;
       const match = text.match(/time=(\d+):(\d+):(\d+\.\d+)/);
       if (match && win && durationSecs > 0) {
         const elapsed = parseInt(match[1]) * 3600 + parseInt(match[2]) * 60 + parseFloat(match[3]);
@@ -28,6 +30,8 @@ export function spawnFFmpeg(args, durationSecs) {
       if (code === 0) {
         resolve(args[args.length - 1]);
       } else {
+        console.error('FFmpeg args:', args);
+        console.error('FFmpeg stderr:', stderrLog);
         reject(new Error(`FFmpeg exited with code ${code}`));
       }
     });
