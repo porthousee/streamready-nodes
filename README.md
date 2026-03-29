@@ -1,34 +1,57 @@
-# streamready-nodes
+# StreamReady Nodes
 
-An Electron application with React
+A free, open-source node-based video editor for streamers. Upload a clip, build a processing pipeline visually, render to file — no subscription, no cost.
 
-## Recommended IDE Setup
+Built by [StreamReady](https://streamreadypc.com) — free tools for streamers.
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+## What it does
 
-## Project Setup
+- Upload any video clip (mp4, mov, mkv, avi, webm)
+- Build a visual processing pipeline using drag-and-drop nodes
+- Nodes: **Crop**, **Transform** (position + scale), **Blur**, **Mask**, **Combine**
+- Preview any frame before rendering
+- Render to MP4 via FFmpeg — full quality, no re-encoding overhead
+- Save and load projects as JSON
 
-### Install
+## Download
+
+Get the latest Windows installer from [Releases](../../releases).
+
+## Development
+
+Requires Node.js 18+.
 
 ```bash
-$ npm install
+npm install
+npm run dev
 ```
 
-### Development
+## Run tests
 
 ```bash
-$ npm run dev
+npm test
 ```
 
-### Build
+## Build installer
 
 ```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
+npm run build
 ```
+
+Outputs a Windows NSIS installer to `dist/`.
+
+## Tech stack
+
+- [Electron](https://electronjs.org) + [electron-vite](https://electron-vite.org)
+- [React](https://react.dev) + [React Flow](https://reactflow.dev)
+- [Zustand](https://github.com/pmndrs/zustand) for state
+- [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static) — bundled FFmpeg binary
+- [Tailwind CSS v4](https://tailwindcss.com)
+
+## Contributing
+
+PRs welcome. Open an issue first for large changes.
+
+## License
+
+MIT — see [LICENSE](LICENSE)
