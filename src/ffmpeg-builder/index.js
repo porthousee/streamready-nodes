@@ -1,1 +1,1 @@
-export { buildFFmpegArgs } from './graphWalker.js';
+export { buildFFmpegArgs, buildPartialFFmpegArgs, topologicalSort } from './graphWalker.js';

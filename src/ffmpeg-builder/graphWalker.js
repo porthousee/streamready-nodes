@@ -12,7 +12,7 @@ const NODE_FILTERS = {
   combinerNode: combinerFilter,
 };
 
-function topologicalSort(nodes, edges) {
+export function topologicalSort(nodes, edges) {
   const inDegree = Object.fromEntries(nodes.map(n => [n.id, 0]));
   const adj = Object.fromEntries(nodes.map(n => [n.id, []]));
 
@@ -97,6 +97,59 @@ export function buildFFmpegArgs(graph, inputPath, outputPath) {
     '-map', '0:a?',
     '-c:a', 'copy',
     '-movflags', '+faststart',
+    outputPath,
+  ];
+}
+
+export function buildPartialFFmpegArgs(graph, upToNodeId, inputPath, outputPath) {
+  const { nodes, edges } = graph;
+  const source = nodes.find(n => n.type === 'sourceNode');
+  if (!source) throw new Error('Graph must contain a sourceNode');
+
+  if (upToNodeId === source.id) {
+    return ['-i', inputPath, outputPath];
+  }
+
+  const labelMap = { [source.id]: '0:v' };
+  let counter = 0;
+  const filters = [];
+
+  for (const node of topologicalSort(nodes, edges)) {
+    if (node.type === 'sourceNode' || node.type === 'outputNode') continue;
+
+    const inEdges = edges
+      .filter(e => e.target === node.id)
+      .sort((a, b) => {
+        const ai = parseInt(a.targetHandle?.replace('input-', '') ?? '0');
+        const bi = parseInt(b.targetHandle?.replace('input-', '') ?? '0');
+        return ai - bi;
+      });
+
+    const hasAllInputs = inEdges.length > 0 && inEdges.every(e => labelMap[e.source] !== undefined);
+    if (!hasAllInputs) continue;
+
+    const inputLabels = inEdges.map(e => `[${labelMap[e.source]}]`).join('');
+    const outLabel = `v${counter++}`;
+    labelMap[node.id] = outLabel;
+
+    const filterFn = NODE_FILTERS[node.type];
+    if (filterFn) {
+      filters.push(filterFn(node, inputLabels, `[${outLabel}]`));
+    }
+
+    if (node.id === upToNodeId) break;
+  }
+
+  const finalLabel = labelMap[upToNodeId];
+
+  if (!finalLabel || filters.length === 0) {
+    return ['-i', inputPath, outputPath];
+  }
+
+  return [
+    '-i', inputPath,
+    '-filter_complex', filters.join(';'),
+    '-map', `[${finalLabel}]`,
     outputPath,
   ];
 }
