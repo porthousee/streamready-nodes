@@ -1,11 +1,13 @@
 import { NodeShell } from './shared/NodeShell';
 import { Handle, Position } from '@xyflow/react';
+import { useGraphStore } from '../store/graphStore';
 
-export function CombinerNode({ data }) {
+export function CombinerNode({ id, data }) {
+  const preview = useGraphStore(s => s.nodePreviews[id]);
   const count = data.inputsCount ?? 2;
 
   return (
-    <NodeShell title="Combiner" variant="processing" hasInput={false}>
+    <NodeShell title="Combiner" variant="processing" hasInput={false} previewSrc={preview}>
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className="relative flex items-center h-6 mb-1">
           <Handle
