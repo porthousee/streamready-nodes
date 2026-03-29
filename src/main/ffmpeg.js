@@ -61,3 +61,23 @@ export function getVideoDuration(filePath) {
     proc.on('error', reject);
   });
 }
+
+/**
+ * Spawn FFmpeg to extract a single frame. Args must include output path as last arg.
+ * @param {string[]} args - Full FFmpeg argument array (without leading -y)
+ * @returns {Promise<void>}
+ */
+export function spawnFFmpegFrame(args) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(ffmpegPath, ['-y', ...args]);
+    proc.stderr.on('data', () => {});
+    proc.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`FFmpeg frame extraction failed with code ${code}`));
+      }
+    });
+    proc.on('error', reject);
+  });
+}
