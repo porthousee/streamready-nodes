@@ -4,6 +4,7 @@ import { PropertiesPanel } from './panels/PropertiesPanel';
 import { PreviewPanel } from './panels/PreviewPanel';
 import { ProgressBar } from './panels/ProgressBar';
 import { useGraphStore } from './store/graphStore';
+import { useNodePreviews } from './hooks/useNodePreviews';
 
 const NODE_TYPES = [
   { type: 'cropNode', label: 'Crop' },
@@ -13,7 +14,7 @@ const NODE_TYPES = [
   { type: 'combinerNode', label: 'Combiner' },
 ];
 
-function Toolbar({ onAddNode, onRender, onSave, onOpen, renderStatus }) {
+function Toolbar({ onAddNode, onRender, onSave, onOpen, renderStatus, clipDuration, previewTimestamp, onScrub }) {
   const [showAdd, setShowAdd] = useState(false);
 
   return (
@@ -51,6 +52,21 @@ function Toolbar({ onAddNode, onRender, onSave, onOpen, renderStatus }) {
         Save
       </button>
 
+      {clipDuration > 0 && (
+        <div className="flex items-center gap-2 flex-1 max-w-xs">
+          <span className="text-xs text-muted font-mono shrink-0">{previewTimestamp.toFixed(1)}s</span>
+          <input
+            type="range"
+            min={0}
+            max={clipDuration}
+            step={0.1}
+            value={previewTimestamp}
+            onChange={e => onScrub(parseFloat(e.target.value))}
+            className="nodrag flex-1 accent-purple"
+          />
+        </div>
+      )}
+
       <div className="flex-1" />
 
       <button
@@ -71,6 +87,20 @@ export default function App() {
   const setRenderState = useGraphStore(s => s.setRenderState);
   const renderState = useGraphStore(s => s.renderState);
   const nodes = useGraphStore(s => s.nodes);
+  const clipDuration = useGraphStore(s => s.clipDuration);
+  const previewTimestamp = useGraphStore(s => s.previewTimestamp);
+  const setPreviewTimestamp = useGraphStore(s => s.setPreviewTimestamp);
+  const setClipDuration = useGraphStore(s => s.setClipDuration);
+
+  useNodePreviews();
+
+  // Update clipDuration when source file changes
+  const sourceNode = nodes.find(n => n.type === 'sourceNode');
+  const inputPath = sourceNode?.data?.filePath ?? null;
+  useEffect(() => {
+    if (!inputPath) { setClipDuration(0); return; }
+    window.electronAPI.getVideoDuration(inputPath).then(setClipDuration).catch(() => {});
+  }, [inputPath]);
 
   useEffect(() => {
     const remove = window.electronAPI.onRenderProgress((progress) => {
@@ -149,6 +179,9 @@ export default function App() {
         onSave={handleSave}
         onOpen={handleOpen}
         renderStatus={renderState.status}
+        clipDuration={clipDuration}
+        previewTimestamp={previewTimestamp}
+        onScrub={setPreviewTimestamp}
       />
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-col flex-1 overflow-hidden">
