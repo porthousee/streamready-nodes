@@ -1,20 +1,21 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+const { contextBridge, ipcRenderer } = require('electron');
 
-// Custom APIs for renderer
-const api = {}
+contextBridge.exposeInMainWorld('electronAPI', {
+  renderGraph: (graph, inputPath, outputPath) =>
+    ipcRenderer.invoke('graph:render', { graph, inputPath, outputPath }),
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
-  }
-} else {
-  window.electron = electronAPI
-  window.api = api
-}
+  previewGraph: (graph, inputPath, timestamp) =>
+    ipcRenderer.invoke('graph:preview', { graph, inputPath, timestamp }),
+
+  pickInputFile: () =>
+    ipcRenderer.invoke('file:pick-input'),
+
+  pickOutputFile: () =>
+    ipcRenderer.invoke('file:pick-output'),
+
+  onRenderProgress: (callback) => {
+    const handler = (_, value) => callback(value);
+    ipcRenderer.on('render:progress', handler);
+    return () => ipcRenderer.removeListener('render:progress', handler);
+  },
+});
